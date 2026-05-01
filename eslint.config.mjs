@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs'],
+    ignores: ['eslint.config.mjs', 'dist/**'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -26,12 +26,31 @@ export default tseslint.config(
   },
   {
     rules: {
+      // Unhandled promises = bugs, not warnings
+      '@typescript-eslint/no-floating-promises': 'error',
+
+      // Allow explicit any when genuinely needed (e.g. third-party types)
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
+
+      // NestJS decorators and metadata reflection rely heavily on `any` internally.
+      // Fighting these rules produces noise without improving safety.
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
-      "prettier/prettier": ["error", { endOfLine: "auto" }],
+      '@typescript-eslint/no-unsafe-return': 'off',
+
+      // Unused vars are errors, but allow the _ prefix convention for intentional ignores
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },
 );

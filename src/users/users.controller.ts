@@ -1,7 +1,7 @@
 import {
   Controller,
   Get,
-  Post,
+  Patch,
   Body,
   Param,
   ParseIntPipe,
@@ -10,7 +10,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { UsersService } from "./users.service";
-import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @ApiTags("users")
 @ApiBearerAuth()
@@ -18,12 +18,6 @@ import { CreateUserDto } from "./dto/create-user.dto";
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Post()
-  @ApiOperation({ summary: "Create a user" })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
 
   @Get()
   @ApiOperation({ summary: "List all users" })
@@ -35,5 +29,11 @@ export class UsersController {
   @ApiOperation({ summary: "Get user by ID" })
   findOne(@Param("id", ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
+  }
+
+  @Patch(":id")
+  @ApiOperation({ summary: "Update user profile (name)" })
+  update(@Param("id", ParseIntPipe) id: number, @Body() dto: UpdateUserDto) {
+    return this.usersService.update(id, dto);
   }
 }
